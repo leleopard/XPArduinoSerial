@@ -56,7 +56,7 @@ class Bounce
     void interval(uint16_t interval_millis);
 
     // get the number of the pin the instance is attached to
-    uint8_t getPin();
+    int getPin();
     
     // Updates the pin
     // Returns 1 if the state changed
@@ -84,7 +84,7 @@ class Bounce
     unsigned long previous_millis;
     uint16_t interval_millis;
     uint8_t state;
-    uint8_t pin;
+    int pin;
 };
 
 #endif

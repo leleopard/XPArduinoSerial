@@ -1,50 +1,43 @@
 #include "Bounce2ST.h"
+#include "potentiometer.h"
 #include "serialComm.h"
+#include "globals.h"
 
+#define BAUD 115200
 #define MAX_NR_SWITCHES 32
 
 Bounce SWITCH_ARRAY[32] ;
+Potentiometer POT_ARRAY[16];
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(BAUD);
   pinMode(22,INPUT_PULLUP);
-  SWITCH_ARRAY[0].attach(22);
+  //SWITCH_ARRAY[0].attach(22);
+  //POT_ARRAY[0].attach(0);
 }
 int val = 0;
 
 void loop() {
-
+  while (Serial.available () > 0){
+    //Serial.print("Serial data available!");
+    processIncomingByte (Serial.read ());
+  }
   for (int i = 0; i < MAX_NR_SWITCHES; i++) {
     if (SWITCH_ARRAY[i].update() == 1) {
       int value = SWITCH_ARRAY[i].read();
       sendSwitchValue(SWITCH_ARRAY[i].getPin(), value);
-      
-      //Serial.print("pin ");
-      //Serial.print(SWITCH_ARRAY[i].getPin());
-      //Serial.print(" changed, value: ");
-      //Serial.println(value);
-      
-    } else {
-      //Serial.println("pin unchanged");
-    }
-    
+    } 
+  }
+  for (int i = 0; i < 16; i++) {
+    if (POT_ARRAY[i].update() == true) {
+      //Serial.println("POT VALUE CHANGED: POT nr"+ (String)i + " pin: "+(String) POT_ARRAY[i].getPin());
+      int value = POT_ARRAY[i].read();
+      sendInputValue("POT:",POT_ARRAY[i].getPin(), value);
+    } 
   }
   
-  // put your main code here, to run repeatedly:
-  char ch = Serial.read();
-  if (ch == '+' ) {
-    if (val<255) {
-      val++;
-      Serial.println(val);
-    }
-  }
-  if (ch == '-' ) {
-    if (val>0) {
-      val--;
-      Serial.println(val);
-    }
-  }
-  analogWrite(11, val);
+  //Serial.print("I'm there!!");
+  
   
 }

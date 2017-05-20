@@ -16,7 +16,7 @@ Bounce::Bounce()
     : previous_millis(0)
     , interval_millis(10)
     , state(0)
-    , pin(0)
+    , pin(-1)
 {}
 
 void Bounce::attach(int pin) {
@@ -44,13 +44,13 @@ void Bounce::interval(uint16_t interval_millis)
 }
 
 // [ST] get the number of the pin the instance is attached to
-uint8_t Bounce::getPin(){
+int Bounce::getPin(){
   return this->pin;
 }
 
 bool Bounce::update()
 {
-if (this->pin == 0){
+if (this->pin == -1){
   return false;
 } else {
 #ifdef BOUNCE_LOCK_OUT
