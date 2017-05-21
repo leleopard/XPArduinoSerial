@@ -12,9 +12,10 @@ Potentiometer POT_ARRAY[16];
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD);
-  pinMode(22,INPUT_PULLUP);
+  //pinMode(22,INPUT_PULLUP);
   //SWITCH_ARRAY[0].attach(22);
   //POT_ARRAY[0].attach(0);
+  Serial.println("Setup complete...");
 }
 int val = 0;
 
@@ -26,7 +27,7 @@ void loop() {
   for (int i = 0; i < MAX_NR_SWITCHES; i++) {
     if (SWITCH_ARRAY[i].update() == 1) {
       int value = SWITCH_ARRAY[i].read();
-      sendSwitchValue(SWITCH_ARRAY[i].getPin(), value);
+      sendInputValue("SW:", SWITCH_ARRAY[i].getPin(), value);
     } 
   }
   for (int i = 0; i < 16; i++) {

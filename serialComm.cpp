@@ -64,7 +64,7 @@ void processCommand(char* command){
       SWITCH_ARRAY[i].attach(pin);
       SWITCH_ARRAY[i].update();
       int value = SWITCH_ARRAY[i].read();
-      sendSwitchValue(SWITCH_ARRAY[i].getPin(), value);
+      sendInputValue("SW:", SWITCH_ARRAY[i].getPin(), value);
       cmd_code = strtok(NULL, ":");
       i++;
     }
@@ -88,7 +88,7 @@ void processCommand(char* command){
       POT_ARRAY[i].attach(pin);
       POT_ARRAY[i].update();
       int value = POT_ARRAY[i].read();
-      sendInputValue("POT",POT_ARRAY[i].getPin(), value);
+      sendInputValue("POT:",POT_ARRAY[i].getPin(), value);
       cmd_code = strtok(NULL, ":");
       
       i++;
@@ -103,16 +103,16 @@ void processCommand(char* command){
   
 }
 
-void sendSwitchValue(uint8_t pin,int value){
-  Serial.print("SW:"+(String)pin+":"+(String)value+'\13'+'\10');
-}
-
 void sendInputValue(String inputType, uint8_t pin,int value){
-  Serial.print(inputType+(String)pin+":"+(String)value+'\13'+'\10');
+  Serial.print(inputType+(String)pin+":"+(String)value+';');
+  //Serial.println(inputType+(String)pin+":"+(String)value);
+  //Serial.println(value);
+  delay(1);
 }
 
 void sendXP_Cmd(String command){
   Serial.print("CMND0"+command+'\13'+'\10');
+  delay(1);
 }
 
 void sendXP_Dref(float value, String dataref){

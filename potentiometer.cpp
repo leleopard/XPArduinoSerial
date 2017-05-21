@@ -6,6 +6,9 @@ Potentiometer::Potentiometer(){
   _pin = -1;  
   _value = 0;
   _previous_value = 0;
+  for(int i =0; i < NR_READINGS ; i++) {
+    _readings[i] = 0;
+  }
 }
 
 // Attach to a pin (and also sets initial value)
@@ -30,14 +33,21 @@ bool Potentiometer::update(){
   if(_pin == -1){
     return false;
   } else {
-    _value = analogRead(_pin);
-    if(abs(_value - _previous_value) > 5){
+    _total = _total - _readings[_readindex];
+    _readings[_readindex] = analogRead(_pin);
+    _total = _total + _readings[_readindex];
+    _readindex++;
+    if(_readindex >= NR_READINGS){
+      _readindex = 0;
+    }
+    _value = _total/NR_READINGS; 
+    if(abs(_value - _previous_value) > 2 && abs(_value - _previous_value) < 200){
       _previous_value = _value;
       return true;
     } else {
       return false;
     }
-    
+    delay(1);
   }
 }
 

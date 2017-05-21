@@ -2,6 +2,8 @@
 #ifndef potentiometer_h
 #define potentiometer_h
 
+#define NR_READINGS 10
+
 class Potentiometer
 {
   public:
@@ -22,6 +24,11 @@ class Potentiometer
     int read();
 
  protected:
+    int _readings[NR_READINGS];
+    int _readindex = 0;
+    int _total = 0;
+    int _average = 0;
+    
     int _value;
     int _previous_value;
     int _pin;
