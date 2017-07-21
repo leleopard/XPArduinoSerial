@@ -100,6 +100,93 @@ void processCommand(char* command){
       Serial.println("Pot nr "+ (String)i+ " pin: "+ (String)POT_ARRAY[i].getPin());
     }*/
   }
+
+  if (strcmp(cmd_code,"PWM_PINS") == 0) {
+    //Serial.println("");
+    //Serial.println("Set pwm pins...");
+    cmd_code = strtok(NULL, ":");
+    int i = 0;
+    while( cmd_code != NULL ){
+      //Serial.print("cmd chunk, pin: ");
+      //Serial.println(cmd_code);
+      int pin = atoi(cmd_code);
+      PWM_ARRAY[i].attach(pin);
+      cmd_code = strtok(NULL, ":");
+      i++;
+    }
+    for (int j=i; j<MAX_NR_PWMS; j++){
+      PWM_ARRAY[j].attach(-1);
+    }
+  }
+  if (strcmp(cmd_code,"PWM") == 0) {
+    //Serial.println("");
+    //Serial.println("Set PWM pin...");
+    cmd_code = strtok(NULL, ":");
+    int i = 0;
+    int pin = -2;
+    int pwm_value = 0;
+    while( cmd_code != NULL ){
+      //Serial.print("cmd chunk, pin: ");
+      //Serial.println(cmd_code);
+      if(i == 0){
+        pin = atoi(cmd_code);
+      } if (i == 1){
+        pwm_value = atoi(cmd_code);
+      }
+      cmd_code = strtok(NULL, ":");
+      i++;
+    }
+    for (int i=0; i<MAX_NR_PWMS; i++){
+      if(PWM_ARRAY[i].getPin() == pin){
+        //Serial.println("PWM updating PWM value on pin: " + (String)pin + " value: " + pwm_value);
+        PWM_ARRAY[i].updateValue(pwm_value);
+      }
+    }
+  }
+
+  if (strcmp(cmd_code,"SERVO_PINS") == 0) {
+    //Serial.println("");
+    //Serial.println("Set servo pins...");
+    cmd_code = strtok(NULL, ":");
+    int i = 0;
+    while( cmd_code != NULL ){
+      //Serial.print("cmd chunk, pin: ");
+      //Serial.println(cmd_code);
+      int pin = atoi(cmd_code);
+      SERVO_ARRAY[i].attach(pin);
+      cmd_code = strtok(NULL, ":");
+      i++;
+    }
+    for (int j=i; j<MAX_NR_SERVOS; j++){
+      SERVO_ARRAY[j].detach();
+    }
+  }
+
+  if (strcmp(cmd_code,"SERVO") == 0) {
+    //Serial.println("");
+    //Serial.println("Set SERVO pin...");
+    cmd_code = strtok(NULL, ":");
+    int i = 0;
+    int pin = -2;
+    int servo_angle = 0;
+    while( cmd_code != NULL ){
+      //Serial.print("cmd chunk, pin: ");
+      //Serial.println(cmd_code);
+      if(i == 0){
+        pin = atoi(cmd_code);
+      } if (i == 1){
+        servo_angle = atoi(cmd_code);
+      }
+      cmd_code = strtok(NULL, ":");
+      i++;
+    }
+    for (int i=0; i<MAX_NR_SERVOS; i++){
+      if(SERVO_ARRAY[i].getPin() == pin){
+        //Serial.println("SERVO updating SERVO angle on pin: " + (String)pin + " angle: " + servo_angle);
+        SERVO_ARRAY[i].write(servo_angle);
+      }
+    }
+  }
   
 }
 
