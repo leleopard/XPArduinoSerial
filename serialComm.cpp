@@ -187,6 +187,50 @@ void processCommand(char* command){
       }
     }
   }
+
+  if (strcmp(cmd_code,"DIGOUT_PINS") == 0) {
+    //Serial.println("");
+    //Serial.println("Set digital out pins...");
+    cmd_code = strtok(NULL, ":");
+    int i = 0;
+    while( cmd_code != NULL ){
+      //Serial.print("cmd chunk, pin: ");
+      //Serial.println(cmd_code);
+      int pin = atoi(cmd_code);
+      DIGOUTPUTS_ARRAY[i].attach(pin);
+      cmd_code = strtok(NULL, ":");
+      i++;
+    }
+    for (int j=i; j<MAX_NR_DIGOUTPUTS; j++){
+      DIGOUTPUTS_ARRAY[j].attach(-1);
+    }
+  }
+
+  if (strcmp(cmd_code,"DIGOUT") == 0) {
+    //Serial.println("");
+    //Serial.println("Set digital out pin...");
+    cmd_code = strtok(NULL, ":");
+    int i = 0;
+    int pin = -2;
+    int value = 0;
+    while( cmd_code != NULL ){
+      //Serial.print("cmd chunk, pin: ");
+      //Serial.println(cmd_code);
+      if(i == 0){
+        pin = atoi(cmd_code);
+      } if (i == 1){
+        value = atoi(cmd_code);
+      }
+      cmd_code = strtok(NULL, ":");
+      i++;
+    }
+    for (int i=0; i<MAX_NR_DIGOUTPUTS; i++){
+      if(DIGOUTPUTS_ARRAY[i].getPin() == pin){
+        //Serial.println("DIG OUTPUT updating output value on pin: " + (String)pin + " value: " + value);
+        DIGOUTPUTS_ARRAY[i].updateValue(value);
+      }
+    }
+  }
   
 }
 

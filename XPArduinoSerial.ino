@@ -7,17 +7,16 @@
 
 #define BAUD 115200
 
-Bounce SWITCH_ARRAY[MAX_NR_SWITCHES] ;
-Potentiometer POT_ARRAY[MAX_NR_POTS];
-PWM PWM_ARRAY[MAX_NR_PWMS];
-ServoST SERVO_ARRAY[MAX_NR_SERVOS];
+Bounce          SWITCH_ARRAY[MAX_NR_SWITCHES] ;
+Potentiometer   POT_ARRAY[MAX_NR_POTS];
+PWM             PWM_ARRAY[MAX_NR_PWMS];
+ServoST         SERVO_ARRAY[MAX_NR_SERVOS];
+DigOutput       DIGOUTPUTS_ARRAY[MAX_NR_DIGOUTPUTS];
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD);
-
-  SERVO_ARRAY[0].attach(8);
-  
+ 
   Serial.println("Setup complete...");
   
 }
@@ -45,6 +44,10 @@ void loop() {
   for (int i = 0; i < MAX_NR_PWMS; i++) {
     PWM_ARRAY[i].writeValue(); 
   }
+  for (int i = 0; i < MAX_NR_DIGOUTPUTS; i++) {
+    DIGOUTPUTS_ARRAY[i].writeValue(); 
+  }
+  
   /**
   // scan from 0 to 180 degrees
   for(angle = 0; angle < 180; angle++)  
