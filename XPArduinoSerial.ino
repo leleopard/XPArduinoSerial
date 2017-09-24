@@ -1,3 +1,5 @@
+#include <Servo.h>
+
 #include "Bounce2ST.h"
 #include "potentiometer.h"
 #include "pwm.h"
