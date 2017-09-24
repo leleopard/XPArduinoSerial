@@ -45,7 +45,7 @@ void processIncomingByte (const byte inByte){
 }
 
 void processCommand(char* command){
-  Serial.print(String(command)+'\13'+'\10');
+  //Serial.print(String(command)+'\13'+'\10');
   
   char* cmd_code = strtok(command, ":");
   //Serial.print("CMD code: ");
@@ -74,6 +74,56 @@ void processCommand(char* command){
     /* for(int i = 0; i<16; i++){
       Serial.println("Switch nr "+ (String)i+ " pin: "+ (String)SWITCH_ARRAY[i].getPin());
     }*/
+  }
+
+  // ROTENC_PINS:27,29,4:31,33,4:34,35,4
+  if (strcmp(cmd_code,"ROTENC_PINS") == 0) {
+    //Serial.println("Set rot encoder pins...");
+    cmd_code = strtok(NULL, ":");
+    int i = 0;
+    char cmd_codes[MAX_NR_ENCODERS][30];
+    while( cmd_code != NULL ){ // we store all rot enc pin commands in a table first
+      //Serial.println(cmd_code);  
+      strcpy(cmd_codes[i], cmd_code); 
+      cmd_code = strtok(NULL, ":");
+      i++;
+    }
+    for(int l = 0; l<i; l++){ // i is now the nr encoders, we go through the table of commands 
+      //Serial.println("Encoder nr "+ (String)l+ " cmdcode: "+ (String)cmd_codes[l]);
+      int pinA = -1;
+      int pinB = -1;
+      int stepsPerNotch = 1;
+      int k = 0;
+      char values[30];
+      strcpy ( values, cmd_codes[l]);
+      char *param_val = strtok(values, ",");
+      
+      while (param_val != NULL){
+        if (k == 0){ // we have pin A
+          pinA = atoi(param_val);
+        } 
+        if (k == 1){ // we have pin B
+          pinB = atoi(param_val);
+        } 
+        if (k == 2){ // we have stepspernotch
+          stepsPerNotch = atoi(param_val);
+        }      
+        param_val = strtok(NULL, ",");   
+        k++;
+      }
+      /*Serial.print("pinA: ");
+      Serial.print((String)pinA);
+      Serial.print("; pinB: ");
+      Serial.print((String)pinB);
+      Serial.print("; steps per notch: ");
+      Serial.println((String)stepsPerNotch);
+      */
+      ROTENC_ARRAY[l].attach(pinA, pinB, (uint8_t)stepsPerNotch);
+    }
+    for (int j=i; j<MAX_NR_ENCODERS; j++){
+      ROTENC_ARRAY[j].attach(-1,-1);
+    }
+
   }
   
   if (strcmp(cmd_code,"POT_PINS") == 0) {

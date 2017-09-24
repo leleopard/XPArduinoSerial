@@ -1,11 +1,13 @@
 #include <Servo.h>
 
 #include "Bounce2ST.h"
+#include "ClickEncoderST.h"
 #include "potentiometer.h"
 #include "pwm.h"
 #include "ServoST.h"
 #include "serialComm.h"
 #include "globals.h"
+#include <TimerOne.h>
 
 #define BAUD 115200
 
@@ -14,11 +16,27 @@ Potentiometer   POT_ARRAY[MAX_NR_POTS];
 PWM             PWM_ARRAY[MAX_NR_PWMS];
 ServoST         SERVO_ARRAY[MAX_NR_SERVOS];
 DigOutput       DIGOUTPUTS_ARRAY[MAX_NR_DIGOUTPUTS];
+ClickEncoder    ROTENC_ARRAY[MAX_NR_ENCODERS];
+int16_t         lastEncoderValues[MAX_NR_ENCODERS];
+int16_t         currentEncoderValues[MAX_NR_ENCODERS];
+
+void timerIsr() {
+  for (int i = 0; i < MAX_NR_ENCODERS; i++) {
+    ROTENC_ARRAY[i].service(); 
+  }
+}
+
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD);
- 
+  Timer1.initialize(1000);
+  Timer1.attachInterrupt(timerIsr); 
+  for (int i = 0; i < MAX_NR_ENCODERS; i++) {
+    lastEncoderValues[i] = 0; 
+    currentEncoderValues[i] = 0; 
+  }
+  
   Serial.println("Setup complete...");
   
 }
@@ -43,6 +61,18 @@ void loop() {
       sendInputValue("POT:",POT_ARRAY[i].getPin(), value);
     } 
   }
+
+  for (int i = 0; i < MAX_NR_ENCODERS; i++) {
+    currentEncoderValues[i] += ROTENC_ARRAY[i].getValue();
+    if (currentEncoderValues[i] != lastEncoderValues[i]) {
+      //Serial.println("Encoder "+(String)i+" value: "+(String)currentEncoderValues[i]); 
+      
+      sendInputValue("ROTENC:",ROTENC_ARRAY[i].getPin(), currentEncoderValues[i]-lastEncoderValues[i]);
+      lastEncoderValues[i] = currentEncoderValues[i];
+    }
+    
+  }
+  
   for (int i = 0; i < MAX_NR_PWMS; i++) {
     PWM_ARRAY[i].writeValue(); 
   }

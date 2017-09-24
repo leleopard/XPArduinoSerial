@@ -37,7 +37,7 @@ void DigOutput::updateValue(int value){
 // Updates the pin (if <> -1)
 void DigOutput::writeValue(){
   if(_pin != -1){
-    //Serial.println("PWM writing value to pin: " + (String)_pin + " value: " + _value);
+    //Serial.println(">ARD> digout writing value to pin: " + (String)_pin + " value: " + _value);
     if(_value == 1) {
       digitalWrite(_pin, HIGH);  
     } else {
