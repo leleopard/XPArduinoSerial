@@ -7,7 +7,7 @@
 #include "ServoST.h"
 #include "serialComm.h"
 #include "globals.h"
-#include <TimerOne.h>
+#include <TimerThree.h>
 
 #define BAUD 115200
 
@@ -21,8 +21,14 @@ int16_t         lastEncoderValues[MAX_NR_ENCODERS];
 int16_t         currentEncoderValues[MAX_NR_ENCODERS];
 
 void timerIsr() {
+  for (int i = 0; i < MAX_NR_SERVOS; i++) {
+    SERVO_ARRAY[i].detach();
+  }
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     ROTENC_ARRAY[i].service(); 
+  }
+  for (int i = 0; i < MAX_NR_SERVOS; i++) {
+    SERVO_ARRAY[i].reAttach();
   }
 }
 
@@ -30,8 +36,8 @@ void timerIsr() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD);
-  Timer1.initialize(1000);
-  Timer1.attachInterrupt(timerIsr); 
+  Timer3.initialize(1000);
+  //Timer3.attachInterrupt(timerIsr); 
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     lastEncoderValues[i] = 0; 
     currentEncoderValues[i] = 0; 

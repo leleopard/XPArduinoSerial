@@ -11,3 +11,7 @@ uint8_t ServoST::attach(int pin){
   Servo::attach(pin,615,2390);
 }
 
+
+void ServoST::reAttach(){
+  Servo::attach(_pin,615,2390);
+}
