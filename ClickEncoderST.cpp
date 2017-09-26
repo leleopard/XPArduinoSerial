@@ -158,8 +158,8 @@ void ClickEncoder::service(void)
       if (acceleration <= (ENC_ACCEL_TOP - ENC_ACCEL_INC)) {
         acceleration += ENC_ACCEL_INC;
       }
-    }/*
-    if(moved == true){
+    }
+    /*if(moved == true){
       Serial.println("moved = "+(String)moved+" delta:"+(String)delta);
       Serial.println("Servicing encoder, pinA:"+(String)pinA+", pinB:"+(String)pinB);
     

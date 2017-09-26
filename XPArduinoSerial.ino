@@ -24,6 +24,7 @@ void timerIsr() {
   for (int i = 0; i < MAX_NR_SERVOS; i++) {
     SERVO_ARRAY[i].detach();
   }
+  //Serial.println("service encoders");
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     ROTENC_ARRAY[i].service(); 
   }
@@ -37,19 +38,20 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD);
   Timer3.initialize(1000);
-  //Timer3.attachInterrupt(timerIsr); 
+  Timer3.attachInterrupt(timerIsr); 
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     lastEncoderValues[i] = 0; 
     currentEncoderValues[i] = 0; 
   }
   
-  Serial.println("Setup complete...");
+  Serial.println("READY;");
   
 }
 int val = 0;
 int angle = 0; 
 
 void loop() {
+  //Serial.println("looping");
   while (Serial.available () > 0){
     //Serial.print("Serial data available!");
     processIncomingByte (Serial.read ());

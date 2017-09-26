@@ -52,7 +52,7 @@ void processCommand(char* command){
   //Serial.println(cmd_code);
   
   if (strcmp(cmd_code,"SW_PINS") == 0) {
-    //Serial.println("Set switch pins...");
+    Serial.println("Set switch pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
