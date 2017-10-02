@@ -9,7 +9,7 @@
 #include "globals.h"
 #include <TimerThree.h>
 
-#define BAUD 115200
+#define BAUD 9600
 
 Bounce          SWITCH_ARRAY[MAX_NR_SWITCHES] ;
 Potentiometer   POT_ARRAY[MAX_NR_POTS];
@@ -20,10 +20,17 @@ ClickEncoder    ROTENC_ARRAY[MAX_NR_ENCODERS];
 int16_t         lastEncoderValues[MAX_NR_ENCODERS];
 int16_t         currentEncoderValues[MAX_NR_ENCODERS];
 
+unsigned long current_time;
+unsigned long last_time;
+
 void timerIsr() {
   for (int i = 0; i < MAX_NR_SERVOS; i++) {
     SERVO_ARRAY[i].detach();
   }
+  /*while (Serial.available () > 0){
+    //Serial.print("Serial data available!");
+    processIncomingByteOld (Serial.read ());
+  } */
   //Serial.println("service encoders");
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     ROTENC_ARRAY[i].service(); 
@@ -37,25 +44,52 @@ void timerIsr() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD);
-  Timer3.initialize(1000);
-  Timer3.attachInterrupt(timerIsr); 
+  //Timer3.initialize(1000);
+  //Timer3.attachInterrupt(timerIsr); 
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     lastEncoderValues[i] = 0; 
     currentEncoderValues[i] = 0; 
   }
   
-  Serial.println("READY;");
   
+  last_time = millis();
 }
 int val = 0;
 int angle = 0; 
+bool firstloop = true;
+
+const unsigned int MAX_INPUT = 500;
+char ser_buffer [MAX_INPUT];
+int buffer_length = 0;
+
 
 void loop() {
+  current_time = millis();
+  /*if (current_time - last_time > 500) {
+    Serial.println("ARD_RUNNING;");
+    last_time = current_time;
+  }*/
+  
   //Serial.println("looping");
+  cli();
   while (Serial.available () > 0){
     //Serial.print("Serial data available!");
-    processIncomingByte (Serial.read ());
+    processIncomingByteOld (Serial.read ());
+  
+  
+    
+    /*if (buffer_length < (MAX_INPUT - 1)){ // we fill in the buffer unless we are overflowing
+      ser_buffer [buffer_length] = Serial.read();
+      buffer_length++;
+    }*/
+  }/*
+  ser_buffer [buffer_length] = 0; // terminating null byte
+  if(strlen(ser_buffer)>0){
+    Serial.println("serial in buffer: "+(String)ser_buffer);
   }
+  buffer_length = 0;
+  */
+  sei(); 
   for (int i = 0; i < MAX_NR_SWITCHES; i++) {
     if (SWITCH_ARRAY[i].update() == 1) {
       int value = SWITCH_ARRAY[i].read();
@@ -87,7 +121,11 @@ void loop() {
   for (int i = 0; i < MAX_NR_DIGOUTPUTS; i++) {
     DIGOUTPUTS_ARRAY[i].writeValue(); 
   }
-  
+
+  if (firstloop == true){ 
+    Serial.println("READY;");
+    firstloop = false;
+  }
   /**
   // scan from 0 to 180 degrees
   for(angle = 0; angle < 180; angle++)  

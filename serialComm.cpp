@@ -5,26 +5,61 @@
 
 
 // how much serial data we expect before a newline
-const unsigned int MAX_INPUT = 50;
+const unsigned int MAX_INPUT = 250;
+
 
 void processIncomingByte (const byte inByte){
+  char ser_buffer [MAX_INPUT];
+int buffer_length = 0;
+  //static char ser_buffer [MAX_INPUT];
+  static unsigned int input_pos = 0;
+  //Serial.print("inByte: ");
+  //Serial.println(inByte);
+  if (input_pos < (MAX_INPUT - 1)){ // we fill in the buffer until it is full
+    ser_buffer [input_pos] = inByte;
+    input_pos++;
+  } else { // we have filled the buffer lets analyse it
+    ser_buffer [input_pos] = 0; // terminating null byte
+    /*Serial.println("")
+    char *command = strtok(ser_buffer, "\n");
+      
+      while (command != NULL){
+        
+        command = strtok(NULL, "\n"); 
+        Serial.println("Processing command:"+(String)command);  
+        processCommand(command);
+      }
+    */
+    input_pos = 0; 
+  
+  }
+     
+  
+  
+}
+
+void processIncomingByteOld (const byte inByte){
   static char input_line [MAX_INPUT];
   static unsigned int input_pos = 0;
   //Serial.print("inByte: ");
   //Serial.println(inByte);
   switch (inByte) {
-    case '\n':   // end of text
+    case ';':   // end of text
       /*input_line [input_pos] = '\r';
       input_pos++;
       input_line [input_pos] = '\n';
       input_pos++;
       */
-      for (int i=input_pos; i<MAX_INPUT; i++) {
+      input_line [input_pos] = 0;
+      /*for (int i=input_pos; i<MAX_INPUT; i++) {
         input_line [i] = 0;  // terminating null byte
 
-      }
+      }*/
       
       // terminator reached! process input_line here ...
+      Serial.println("");
+      Serial.println("input_line: "+(String)input_line);
+      Serial.println("");
       processCommand (input_line);
       //Serial.println(input_line);
       // reset buffer for next time
@@ -78,7 +113,7 @@ void processCommand(char* command){
 
   // ROTENC_PINS:27,29,4:31,33,4:34,35,4
   if (strcmp(cmd_code,"ROTENC_PINS") == 0) {
-    //Serial.println("Set rot encoder pins...");
+    Serial.println("Set rot encoder pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     char cmd_codes[MAX_NR_ENCODERS][30];
@@ -128,7 +163,7 @@ void processCommand(char* command){
   
   if (strcmp(cmd_code,"POT_PINS") == 0) {
     //Serial.println("");
-    //Serial.println("Set pot pins...");
+    Serial.println("Set pot pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
@@ -153,7 +188,7 @@ void processCommand(char* command){
 
   if (strcmp(cmd_code,"PWM_PINS") == 0) {
     //Serial.println("");
-    //Serial.println("Set pwm pins...");
+    Serial.println("Set pwm pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
@@ -196,7 +231,7 @@ void processCommand(char* command){
 
   if (strcmp(cmd_code,"SERVO_PINS") == 0) {
     //Serial.println("");
-    //Serial.println("Set servo pins...");
+    Serial.println("Set servo pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
@@ -240,7 +275,7 @@ void processCommand(char* command){
 
   if (strcmp(cmd_code,"DIGOUT_PINS") == 0) {
     //Serial.println("");
-    //Serial.println("Set digital out pins...");
+    Serial.println("Set digital out pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){

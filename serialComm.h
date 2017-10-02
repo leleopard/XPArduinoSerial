@@ -4,6 +4,7 @@
 #include "Arduino.h"
 
 void processIncomingByte (const byte inByte);
+void processIncomingByteOld (const byte inByte);
 void sendSwitchValue(uint8_t pin,int value);
 void sendInputValue(String inputType, uint8_t pin,int value);
 void processCommand(char* command);
