@@ -5,6 +5,7 @@
 
 void processIncomingByte (const byte inByte);
 void processIncomingByteOld (const byte inByte);
+void processCommandsBuffer();
 void sendSwitchValue(uint8_t pin,int value);
 void sendInputValue(String inputType, uint8_t pin,int value);
 void processCommand(char* command);

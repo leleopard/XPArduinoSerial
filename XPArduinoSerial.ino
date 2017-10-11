@@ -5,16 +5,18 @@
 #include "potentiometer.h"
 #include "pwm.h"
 #include "ServoST.h"
+#include "PWMServo.h"
 #include "serialComm.h"
 #include "globals.h"
 #include <TimerThree.h>
 
-#define BAUD 9600
+#define BAUD 57600
 
 Bounce          SWITCH_ARRAY[MAX_NR_SWITCHES] ;
 Potentiometer   POT_ARRAY[MAX_NR_POTS];
 PWM             PWM_ARRAY[MAX_NR_PWMS];
-ServoST         SERVO_ARRAY[MAX_NR_SERVOS];
+//ServoST         SERVO_ARRAY[MAX_NR_SERVOS];
+PWMServo         SERVO_ARRAY[MAX_NR_SERVOS];
 DigOutput       DIGOUTPUTS_ARRAY[MAX_NR_DIGOUTPUTS];
 ClickEncoder    ROTENC_ARRAY[MAX_NR_ENCODERS];
 int16_t         lastEncoderValues[MAX_NR_ENCODERS];
@@ -24,28 +26,26 @@ unsigned long current_time;
 unsigned long last_time;
 
 void timerIsr() {
-  for (int i = 0; i < MAX_NR_SERVOS; i++) {
-    SERVO_ARRAY[i].detach();
-  }
-  /*while (Serial.available () > 0){
-    //Serial.print("Serial data available!");
-    processIncomingByteOld (Serial.read ());
-  } */
+  /*for (int i = 0; i < MAX_NR_SERVOS; i++) {
+    SERVO_ARRAY[i].reAttach();
+  }*/
+  
   //Serial.println("service encoders");
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     ROTENC_ARRAY[i].service(); 
   }
-  for (int i = 0; i < MAX_NR_SERVOS; i++) {
-    SERVO_ARRAY[i].reAttach();
-  }
+  /*for (int i = 0; i < MAX_NR_SERVOS; i++) {
+    SERVO_ARRAY[i].refresh();
+    //SERVO_ARRAY[i].detach();
+  }*/
 }
 
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD);
-  //Timer3.initialize(1000);
-  //Timer3.attachInterrupt(timerIsr); 
+  Timer3.initialize(7000);
+  Timer3.attachInterrupt(timerIsr); 
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     lastEncoderValues[i] = 0; 
     currentEncoderValues[i] = 0; 
@@ -71,25 +71,14 @@ void loop() {
   }*/
   
   //Serial.println("looping");
-  cli();
+  //noInterrupts();
   while (Serial.available () > 0){
     //Serial.print("Serial data available!");
     processIncomingByteOld (Serial.read ());
-  
-  
-    
-    /*if (buffer_length < (MAX_INPUT - 1)){ // we fill in the buffer unless we are overflowing
-      ser_buffer [buffer_length] = Serial.read();
-      buffer_length++;
-    }*/
-  }/*
-  ser_buffer [buffer_length] = 0; // terminating null byte
-  if(strlen(ser_buffer)>0){
-    Serial.println("serial in buffer: "+(String)ser_buffer);
   }
-  buffer_length = 0;
-  */
-  sei(); 
+  //interrupts();
+  processCommandsBuffer();
+  
   for (int i = 0; i < MAX_NR_SWITCHES; i++) {
     if (SWITCH_ARRAY[i].update() == 1) {
       int value = SWITCH_ARRAY[i].read();
@@ -120,8 +109,13 @@ void loop() {
   }
   for (int i = 0; i < MAX_NR_DIGOUTPUTS; i++) {
     DIGOUTPUTS_ARRAY[i].writeValue(); 
-  }
-
+  }/*
+  for (int i = 0; i < MAX_NR_SERVOS; i++) {
+    //SERVO_ARRAY[i].reAttach();
+    SERVO_ARRAY[i].refresh();
+    //SERVO_ARRAY[i].detach();
+  }*/
+  
   if (firstloop == true){ 
     Serial.println("READY;");
     firstloop = false;

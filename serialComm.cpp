@@ -6,8 +6,8 @@
 
 // how much serial data we expect before a newline
 const unsigned int MAX_INPUT = 250;
-
-
+char commands_buffer[512] = "";
+int current_cmdsbuffer_length = 0;
 void processIncomingByte (const byte inByte){
   char ser_buffer [MAX_INPUT];
 int buffer_length = 0;
@@ -50,17 +50,19 @@ void processIncomingByteOld (const byte inByte){
       input_line [input_pos] = '\n';
       input_pos++;
       */
-      input_line [input_pos] = 0;
+      input_line [input_pos] = ';';
+      input_line [input_pos+1] = 0;
       /*for (int i=input_pos; i<MAX_INPUT; i++) {
         input_line [i] = 0;  // terminating null byte
 
       }*/
       
       // terminator reached! process input_line here ...
-      Serial.println("");
-      Serial.println("input_line: "+(String)input_line);
-      Serial.println("");
-      processCommand (input_line);
+      //Serial.println("");
+      //Serial.println("input_line: "+(String)input_line);
+      //Serial.println("");
+      strcat(commands_buffer, input_line);
+      //processCommand (input_line);
       //Serial.println(input_line);
       // reset buffer for next time
       input_pos = 0;  
@@ -78,7 +80,19 @@ void processIncomingByteOld (const byte inByte){
   }  // end of switch
   
 }
-
+void processCommandsBuffer(){
+  if( strlen(commands_buffer) > 0) { // if there is something in the buffer
+    //Serial.println("commands buffer: "+(String)commands_buffer);
+    char* command = strtok(commands_buffer, ";");
+    char command_copy[250];
+    while (command != NULL){
+      strcpy(command_copy, command);
+      processCommand(command_copy);
+      command = strtok(NULL, ",");   
+    }
+    commands_buffer[0] = 0;
+  }
+}
 void processCommand(char* command){
   //Serial.print(String(command)+'\13'+'\10');
   
@@ -87,7 +101,7 @@ void processCommand(char* command){
   //Serial.println(cmd_code);
   
   if (strcmp(cmd_code,"SW_PINS") == 0) {
-    Serial.println("Set switch pins...");
+    //Serial.println("Set switch pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
@@ -110,10 +124,10 @@ void processCommand(char* command){
       Serial.println("Switch nr "+ (String)i+ " pin: "+ (String)SWITCH_ARRAY[i].getPin());
     }*/
   }
-
+  
   // ROTENC_PINS:27,29,4:31,33,4:34,35,4
   if (strcmp(cmd_code,"ROTENC_PINS") == 0) {
-    Serial.println("Set rot encoder pins...");
+    //Serial.println("Set rot encoder pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     char cmd_codes[MAX_NR_ENCODERS][30];
@@ -163,7 +177,7 @@ void processCommand(char* command){
   
   if (strcmp(cmd_code,"POT_PINS") == 0) {
     //Serial.println("");
-    Serial.println("Set pot pins...");
+    //Serial.println("Set pot pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
@@ -188,7 +202,7 @@ void processCommand(char* command){
 
   if (strcmp(cmd_code,"PWM_PINS") == 0) {
     //Serial.println("");
-    Serial.println("Set pwm pins...");
+    //Serial.println("Set pwm pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
@@ -231,7 +245,7 @@ void processCommand(char* command){
 
   if (strcmp(cmd_code,"SERVO_PINS") == 0) {
     //Serial.println("");
-    Serial.println("Set servo pins...");
+    //Serial.println("Set servo pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
@@ -268,14 +282,18 @@ void processCommand(char* command){
     for (int i=0; i<MAX_NR_SERVOS; i++){
       if(SERVO_ARRAY[i].getPin() == pin){
         //Serial.println("SERVO updating SERVO angle on pin: " + (String)pin + " angle: " + servo_angle);
+        //SERVO_ARRAY[i].reAttach();
+        //SERVO_ARRAY[i].updateValue(servo_angle);
         SERVO_ARRAY[i].write(servo_angle);
+        
+        //SERVO_ARRAY[i].detach();
       }
     }
   }
 
   if (strcmp(cmd_code,"DIGOUT_PINS") == 0) {
     //Serial.println("");
-    Serial.println("Set digital out pins...");
+    //Serial.println("Set digital out pins...");
     cmd_code = strtok(NULL, ":");
     int i = 0;
     while( cmd_code != NULL ){
