@@ -117,7 +117,7 @@ void processCommand(char* command){
       cmd_code = strtok(NULL, ":");
       i++;
     }
-    for (int j=i; j<32; j++){
+    for (int j=i; j<MAX_NR_SWITCHES; j++){
       SWITCH_ARRAY[j].attach(-1);
     }
     /* for(int i = 0; i<16; i++){
@@ -192,7 +192,7 @@ void processCommand(char* command){
       
       i++;
     }
-    for (int j=i; j<16; j++){
+    for (int j=i; j<MAX_NR_POTS; j++){
       POT_ARRAY[j].attach(-1);
     }
     /*for(int i = 0; i<16; i++){

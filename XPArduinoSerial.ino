@@ -44,7 +44,7 @@ void timerIsr() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD);
-  Timer3.initialize(7000);
+  Timer3.initialize(4000);
   Timer3.attachInterrupt(timerIsr); 
   for (int i = 0; i < MAX_NR_ENCODERS; i++) {
     lastEncoderValues[i] = 0; 
