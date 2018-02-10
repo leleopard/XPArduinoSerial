@@ -11,6 +11,7 @@
 #include <TimerThree.h>
 
 #define BAUD 57600
+#define VERSION "1.2"
 
 Bounce          SWITCH_ARRAY[MAX_NR_SWITCHES] ;
 Potentiometer   POT_ARRAY[MAX_NR_POTS];
@@ -65,10 +66,10 @@ int buffer_length = 0;
 
 void loop() {
   current_time = millis();
-  /*if (current_time - last_time > 500) {
-    Serial.println("ARD_RUNNING;");
+  if (current_time - last_time > 500) {
+    //Serial.println("ARD_RUNNING;");
     last_time = current_time;
-  }*/
+  }
   
   //Serial.println("looping");
   //noInterrupts();
@@ -117,7 +118,8 @@ void loop() {
   }*/
   
   if (firstloop == true){ 
-    Serial.println("READY;");
+    Serial.print("READY;");
+    Serial.print("VERSION:"+(String)VERSION+";");
     firstloop = false;
   }
   /**

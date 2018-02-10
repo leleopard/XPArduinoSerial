@@ -8,9 +8,11 @@
 const unsigned int MAX_INPUT = 250;
 char commands_buffer[512] = "";
 int current_cmdsbuffer_length = 0;
+
+// NOT USED?
 void processIncomingByte (const byte inByte){
   char ser_buffer [MAX_INPUT];
-int buffer_length = 0;
+  int buffer_length = 0;
   //static char ser_buffer [MAX_INPUT];
   static unsigned int input_pos = 0;
   //Serial.print("inByte: ");
@@ -38,6 +40,7 @@ int buffer_length = 0;
   
 }
 
+// Called every loop to read serial port
 void processIncomingByteOld (const byte inByte){
   static char input_line [MAX_INPUT];
   static unsigned int input_pos = 0;
@@ -82,7 +85,7 @@ void processIncomingByteOld (const byte inByte){
 }
 void processCommandsBuffer(){
   if( strlen(commands_buffer) > 0) { // if there is something in the buffer
-    //Serial.println("commands buffer: "+(String)commands_buffer);
+    Serial.println(">>ARD DEBUG>processCommandsBuffer>commands buffer: "+(String)commands_buffer);
     char* command = strtok(commands_buffer, ";");
     char command_copy[250];
     while (command != NULL){
@@ -94,11 +97,11 @@ void processCommandsBuffer(){
   }
 }
 void processCommand(char* command){
-  //Serial.print(String(command)+'\13'+'\10');
+  Serial.print(">>ARD DEBUG>processCommand>command: "+String(command));
   
   char* cmd_code = strtok(command, ":");
-  //Serial.print("CMD code: ");
-  //Serial.println(cmd_code);
+  Serial.print(">>ARD DEBUG>processCommand>CMD code: ");
+  Serial.print(cmd_code);
   
   if (strcmp(cmd_code,"SW_PINS") == 0) {
     //Serial.println("Set switch pins...");
