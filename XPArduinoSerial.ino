@@ -10,8 +10,8 @@
 #include "globals.h"
 #include <TimerThree.h>
 
-#define BAUD 57600
-#define VERSION "1.2"
+#define BAUD 115200
+#define VERSION "1.2.1"
 
 Bounce          SWITCH_ARRAY[MAX_NR_SWITCHES] ;
 Potentiometer   POT_ARRAY[MAX_NR_POTS];

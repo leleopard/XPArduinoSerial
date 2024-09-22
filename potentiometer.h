@@ -2,7 +2,8 @@
 #ifndef potentiometer_h
 #define potentiometer_h
 
-#define NR_READINGS 10
+#define NR_READINGS 50
+#define MINVALDIFF 4
 
 class Potentiometer
 {

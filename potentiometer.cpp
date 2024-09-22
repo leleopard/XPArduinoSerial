@@ -41,7 +41,7 @@ bool Potentiometer::update(){
       _readindex = 0;
     }
     _value = _total/NR_READINGS; 
-    if(abs(_value - _previous_value) > 2 && abs(_value - _previous_value) < 200){
+    if(abs(_value - _previous_value) > MINVALDIFF && abs(_value - _previous_value) < 200){
       _previous_value = _value;
       return true;
     } else {
